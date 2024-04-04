@@ -1,0 +1,62 @@
+/* groovylint-disable-next-line CompileStatic */
+pipeline  {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerIDSecret')
+    }
+
+    stages {
+        stage('SCM Checkout')  {
+            steps {
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    extensions:[],
+                    userRemoteConfigs: [[url: 'https://github.com/randeeg/springboot-maven-learn']])
+            }
+        }
+        }
+
+        stage('Build the Maven Application')  {
+            steps {
+                sh 'mvn -B clean package'
+            }
+        }
+
+        stage('Test Build package') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        post  {
+            always {
+                junit 'target/build-report/*.xml'
+            }
+        }
+
+        stage('Build docker image') {
+            steps {
+                sh 'docker build -t github-images/springboot-maven:$BUILD_NUMBER .'
+            }
+        }
+
+        stage('login to dockerhub') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | \
+                   docker login -u $DOCKERHUB_CREDENTIALS_USR credentials --password-stdin'
+            }
+        }
+
+        stage('push image') {
+            steps {
+                sh 'docker push github-images/springboot-maven:$BUILD_NUMBER'
+            }
+        }
+        }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+}
+
