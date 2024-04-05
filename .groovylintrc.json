@@ -1,8 +1,0 @@
-{
-    "extends": "recommended",
-    "rules": {
-        "NglParseError": {
-            "enabled": false
-        }
-    }
-}

@@ -1,23 +1,19 @@
-pipeline  {
+pipeline {
     agent any 
-    }
-
-    environment  {
+    environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerIDSecret')
     }
-    
     stages {
         stage('SCM Checkout') {
             steps {
                 checkout scmGit(
                     branches: [[name: '*/main']],
                     extensions:[],
-                    userRemoteConfigs: [[url: 'https://github.com/randeeg/jenkins-pipeline']] )
+                    userRemoteConfigs: [[url: 'https://github.com/randeeg/jenkins-pipeline']] ) 
                 }
-            }
-    }
+        }
 
-        stage('Build the Maven Application')  {
+        stage('Build Application') {
             steps {
                 sh 'mvn -B clean package'
             }
@@ -28,33 +24,34 @@ pipeline  {
                 sh 'mvn test'
             }
         }
-        post  {
+        post(
             always {
                 junit '**/target/build-report/*.xml'
             }
-        }
-    
-        stage('Build docker image') {
+        )
+
+        stage('Build Docker Image') {
             steps {
                 sh 'docker build -t github-images/springboot-maven:$BUILD_NUMBER .'
             }
         }
 
-        stage('login to dockerhub') {
+        stage('login to Image Repo') {
             steps {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | \
-                    docker login -u $DOCKERHUB_CREDENTIALS_USR credentials --password-stdin'
+                    docker login -u $DOCKERHUB_CREDENTIALS_USR credentials --password-stdin' 
             }
         }
-    
-        stage('push image') {
+
+        stage('Push Image to Repo') {
             steps {
                 sh 'docker push github-images/springboot-maven:$BUILD_NUMBER'
             }
         }
-
-post {
-    always {
-        sh 'docker logout'
+    }
+    post {
+        always {
+            sh 'docker logout'
+        }
     }
 }
