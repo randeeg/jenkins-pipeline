@@ -32,20 +32,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t github-images/springboot-maven:$BUILD_NUMBER .'
+                sh 'docker build -t springboot-maven:$BUILD_NUMBER .'
             }
         }
 
-        stage('login to Image Repo') {
+        stage('login to Image Registry') {
             steps {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | \
                     docker login -u $DOCKERHUB_CREDENTIALS_USR credentials --password-stdin' 
             }
         }
 
-        stage('Push Image to Repo') {
+        stage('Push Image to Registry') {
             steps {
-                sh 'docker push github-images/springboot-maven:$BUILD_NUMBER'
+                sh 'docker push springboot-maven:$BUILD_NUMBER'
             }
         }
     }
