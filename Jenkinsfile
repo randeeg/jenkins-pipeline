@@ -24,11 +24,11 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        post(
-            always {
-                junit '**/target/build-report/*.xml'
-            }
-        )
+        // post(
+        //     always {
+        //         junit '**/target/build-report/*.xml'
+        //     }
+        // )
 
         stage('Build Docker Image') {
             steps {
