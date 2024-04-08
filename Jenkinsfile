@@ -32,15 +32,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t randeeg/springboot-maven:$BUILD_NUMBER .'
+                sh 'docker build -t rgdockerid/springboot-maven:$BUILD_NUMBER .'
             }
         }
 
         stage('login and push to container registry') {
             steps {
                 withCredentials ([usernamePassword(credentialsID: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                  sh 'docker push randeeg/spring:maven:$BUILD_NUMBER'  
+                  sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
+                  sh 'docker push rgdockerid/spring:maven:$BUILD_NUMBER'  
                 }
             }
         }
