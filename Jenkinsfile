@@ -15,7 +15,7 @@ pipeline {
 
         stage('Build Application') {
             steps {
-                sh 'mvn -B clean package'
+                sh 'mvn clean install'
             }
         }
 
@@ -32,23 +32,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t springboot-maven:$BUILD_NUMBER .'
+                sh 'docker build -t randeeg/springboot-maven:$BUILD_NUMBER .'
             }
         }
 
-        stage('login to Image Registry') {
+        stage('login and push to container registry') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | \
-                    docker login -u $DOCKERHUB_CREDENTIALS_USR credentials --password-stdin' 
+                withCredentials ([usernamePassword(credentialsID: 'jenkins-docker', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                  sh 'docker push randeeg/spring:maven:$BUILD_NUMBER'  
+                }
             }
         }
 
-        stage('Push Image to Registry') {
-            steps {
-                sh 'docker push springboot-maven:$BUILD_NUMBER'
-            }
-        }
-    }
+     }  
+    
     post {
         always {
             sh 'docker logout'
