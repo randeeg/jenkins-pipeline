@@ -38,7 +38,7 @@ pipeline {
 
         stage('login and push to container registry') {
             steps {
-                withCredentials ([usernamePassword(credentialsID: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                withCredentials ([usernamePassword(credentialsId: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                   sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
                   sh 'docker push rgdockerid/spring:maven:$BUILD_NUMBER'  
                 }
