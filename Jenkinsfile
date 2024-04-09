@@ -36,14 +36,18 @@ pipeline {
             }
         }
 
-        stage('login and push to container registry') {
+        stage('login to container registry') {
             steps {
                   sh 'docker login -u ${env.DOCKERHUB_CREDS_USR} -p ${env.DOCKERHUB_CREDS_PSW}'
-                  sh 'docker push rgdockerid/spring:maven:$BUILD_NUMBER'  
-                }
             }
-        
+        }
 
+        stage( 'Push image to container registry') {
+            steps {
+                  sh 'docker push rgdockerid/spring:maven:$BUILD_NUMBER'    
+            }
+        }
+        
      }  
     
     post {
