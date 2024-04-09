@@ -2,7 +2,7 @@ pipeline {
     agent any 
     environment {
        DOCKERHUB_CREDS = credentials('jenkins-dockerid')
-       DOCKERHUB_CREDS_USR = 'rgdockerid'
+       // DOCKERHUB_CREDS_USR = 'rgdockerid'
     }
     stages {
         stage('SCM Checkout') {
@@ -37,12 +37,24 @@ pipeline {
             }
         }
 
- stage('login and push to container registry') {
+        stage('Login to Container Registry') {
             steps {
-                withCredentials ([usernamePassword(credentialsId: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                  sh 'docker login -u ${dockerHubUser} -p ${dockerHubPassword} --password-stdin'
-                  sh 'docker push rgdockerid/springboot-maven:$BUILD_NUMBER'  
-                }
+                sh ('echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-std')    
+            }
+        }
+
+        stage('Push Image to Registry') {
+            steps {
+                sh 'docker push rgdockerid/springboot-maven:$BUILD_NUMBER'
+            }
+        }
+
+ //stage('login and push to container registry') {
+ //           steps {
+ //               withCredentials ([usernamePassword(credentialsId: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+ //                 sh 'docker login -u ${dockerHubUser} -p ${dockerHubPassword} --password-stdin'
+ //                 sh 'docker push rgdockerid/springboot-maven:$BUILD_NUMBER'  
+ //               }
             }
         }
         
