@@ -37,15 +37,12 @@ pipeline {
             }
         }
 
-        stage('login to container registry') {
+ stage('login and push to container registry') {
             steps {
-                  sh ('docker login -u ${env.DOCKERHUB_CREDS_USR} -p ${env.DOCKERHUB_CREDS}')
-            }
-        }
-
-        stage( 'Push image to container registry') {
-            steps {
-                  sh ('docker push rgdockerid/spring:maven:$BUILD_NUMBER')    
+                withCredentials ([usernamePassword(credentialsId: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                  sh 'docker login -u ${dockerHubUser} -p ${dockerHubPassword}'
+                  sh 'docker push rgdockerid/spring:maven:$BUILD_NUMBER'  
+                }
             }
         }
         
