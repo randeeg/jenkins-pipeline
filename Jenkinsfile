@@ -49,17 +49,9 @@ pipeline {
             }
         }
 
- //stage('login and push to container registry') {
- //           steps {
- //               withCredentials ([usernamePassword(credentialsId: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
- //                 sh 'docker login -u ${dockerHubUser} -p ${dockerHubPassword} --password-stdin'
- //                 sh 'docker push rgdockerid/springboot-maven:$BUILD_NUMBER'  
- //               }
-            }
-        }
+
+    }
         
-     }  
-    
     post {
         always {
             sh 'docker logout'
