@@ -1,7 +1,7 @@
 pipeline {
     agent any 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerIDSecret')
+       DOCKERHUB_CREDS = credentials('jenkins-dockerid')
     }
     stages {
         stage('SCM Checkout') {
@@ -38,8 +38,8 @@ pipeline {
 
         stage('login and push to container registry') {
             steps {
-                withCredentials ([usernamePassword(credentialsId: 'jenkins-dockerid', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                  sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
+                 {
+                  sh 'docker login -u ${env.DOCKERHUB_CREDS_USR} -p ${env.DOCKERHUB_CREDS_PSW}'
                   sh 'docker push rgdockerid/spring:maven:$BUILD_NUMBER'  
                 }
             }
