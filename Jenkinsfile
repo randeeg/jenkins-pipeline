@@ -31,11 +31,11 @@ pipeline {
                 sh "trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL --format table -o trivy-fs-report.html ."
             }
         }
-        post(
+        post {
             always {
                  junit '/target/build-report/*.xml'
              }
-         )
+        }
 
         stage('Build Docker Image') {
             steps {
