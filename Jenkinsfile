@@ -55,7 +55,22 @@ pipeline {
             }
         }
 
-
+        stage(deploy to test environment) {
+            when {
+                branch 'Test'
+            }
+            steps {
+                input message: 'Ready to deploy to Production? (click "Proceed" to continue)'
+            }
+        }
+        stage(deploy to test environment) {
+            when {
+                branch 'main'
+            }
+            steps {
+                input message: 'Ready to deploy? (Click "Proceed" to continue)'    
+            }
+        }
     }
         
     post {
