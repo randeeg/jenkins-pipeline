@@ -25,11 +25,17 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        // post(
-        //     always {
-        //         junit '**/target/build-report/*.xml'
-        //     }
-        // )
+
+        stage('Vulnerability Scan') {
+            steps {
+                sh "trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL --format table -o trivy-fs-report.html ."
+            }
+        }
+        post(
+            always {
+                 junit '/target/build-report/*.xml'
+             }
+         )
 
         stage('Build Docker Image') {
             steps {
