@@ -28,7 +28,7 @@ pipeline {
 
         stage('Vulnerability Scan') {
             steps {
-                sh "trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL --format table -o trivy-fs-report.html ."
+                sh "trivy fs -f table -o trivy-fs-report.html ."
             }
         }
         //post {
