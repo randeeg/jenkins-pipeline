@@ -4,6 +4,11 @@ pipeline {
        DOCKERHUB_CREDS = credentials('jenkins-dockerid')
        // DOCKERHUB_CREDS_USR = 'rgdockerid'
     }
+    parameters {
+        choice(name: 'DEPLOY_ENV', choices: ['Test', 'Prod'], description: 'Select deployment environment')
+            
+    }
+    }
     stages {
         stage('SCM Checkout') {
             steps {
@@ -57,18 +62,21 @@ pipeline {
 
         stage(deploy to test environment) {
             when {
-                branch 'Test'
+                expression { params.DEPLOY_ENV == 'Test' }
             }
             steps {
-                input message: 'Ready to deploy to Production? (click "Proceed" to continue)'
+                sh ('echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin')
+                sh ('docker pull rgdockerid/springboot-maven:Latest')
+                sh ('docker tag')
             }
         }
-        stage(deploy to test environment) {
+        stage(deploy to Production) {
             when {
-                branch 'main'
+                expression { params.DEPLOY_ENV == 'Prod'} 
             }
+
             steps {
-                input message: 'Ready to deploy? (Click "Proceed" to continue)'    
+                sh './deploy Prod'    
             }
         }
     }
